@@ -1,0 +1,169 @@
+package com.evolveum.polygon.hcm;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.objects.Attribute;
+import org.identityconnectors.framework.common.objects.AttributeUtil;
+import org.identityconnectors.framework.common.objects.ConnectorObject;
+import org.identityconnectors.framework.common.objects.ResultsHandler;
+import org.identityconnectors.framework.common.objects.filter.ContainsFilter;
+import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
+import org.identityconnectors.framework.common.objects.filter.Filter;
+
+public class FilterQueryStrategy extends DocumentProcessing implements HandlingStrategy {
+
+	private static final String UID = "__UID__";
+
+	private static final Log LOGGER = Log.getLog(FilterQueryStrategy.class);
+
+	private Map<String, Map<String, Object>> buffer = new HashMap<String, Map<String, Object>>();
+
+	@Override
+	public Boolean checkFilter(String endName, String value, Filter filter, String uidAttributeName) {
+
+		if (filter != null) {
+
+			Attribute attribute;
+			if (filter instanceof EqualsFilter) {
+
+				attribute = ((EqualsFilter) filter).getAttribute();
+
+			} else if (filter instanceof ContainsFilter) {
+
+				attribute = ((ContainsFilter) filter).getAttribute();
+			} else {
+
+				throw new UnsupportedOperationException("Filter operation not supported");
+			}
+
+			String attributeValue = AttributeUtil.getAsStringValue(attribute);
+
+			String attributeName = attribute.getName();
+
+			if ((attributeName.equals(UID) && uidAttributeName.equals(endName)) || attributeName.equals(endName)) {
+
+				if (!attributeValue.equals(value)) {
+
+					return false;
+				}
+			}
+
+		}
+
+		return true;
+
+	}
+
+	public Map<String, Object> handleEmployeeData(Map<String, Object> attributeMap,
+			Map<String, Object> schemaAttributeMap, ResultsHandler handler, String uidAttributeName, String primariId) {
+
+		if (!attributeMap.isEmpty()) {
+			attributeMap = injectAttributes(attributeMap, schemaAttributeMap);
+
+			String uid = (String) attributeMap.get(uidAttributeName);
+
+			if (!buffer.containsKey(uid)) {
+
+				buffer.put(uid, attributeMap);
+
+			} else {
+				StringBuilder idBuilder = null;
+				int order = 0;
+				String originalUid = uid;
+
+				while (buffer.containsKey(uid)) {
+					idBuilder = new StringBuilder(originalUid).append(DOT).append(order);
+					uid = idBuilder.toString();
+					order++;
+				}
+				buffer.put(uid, attributeMap);
+
+				//
+				// if (attributeMap.containsKey(ASSIGMENTID)){
+				// StringBuilder idBuilder = new StringBuilder(uid);
+				// String assigment = attributeMap.get(ASSIGMENTID);
+				// idBuilder.append(DOT).append(assigment);
+				// buffer.put(idBuilder.toString(), attributeMap);
+				//
+				// }else {
+				// LOGGER.error("No assigment number defined for the user: {0}",
+				// uid);
+				// }
+				//
+			}
+
+			attributeMap = new HashMap<String, Object>();
+		}
+
+		return attributeMap;
+
+	}
+
+	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler) {
+		HandlingStrategy strategy = new ObjectBuilderStrategy();
+
+		ConnectorObject connectorObject;
+		int lenght = 0;
+		Map<String, Object> evaluatedMap;
+		Map<String, Object> employeeObject = new HashMap<>();
+		Map<String, Map<String, Object>> entries = new HashMap<String, Map<String, Object>>();
+
+		String record = "";
+
+		if (!buffer.isEmpty()) {
+
+			for (String employeeUid : buffer.keySet()) {
+				evaluatedMap = buffer.get(employeeUid);
+
+				String[] splitId = employeeUid.split("\\.");
+				String uid;
+				lenght = splitId.length;
+
+				if (lenght > 1) {
+					uid = splitId[0];
+				} else {
+					uid = employeeUid;
+				}
+
+				if (evaluatedMap.containsKey("assignments_record")) {
+
+					record = (String) evaluatedMap.get("assignments_record");
+
+				}
+
+				if (!entries.containsKey(uid)) {
+					employeeObject = new HashMap<String, Object>();
+					employeeObject.putAll(evaluatedMap);
+					List<String> recordList = new ArrayList<String>();
+					recordList.add(record);
+					employeeObject.put("assignments_record", recordList);
+					entries.put(uid, employeeObject);
+
+				} else {
+					employeeObject = entries.get(uid);
+					List<String> processedAssigments = (List<String>) employeeObject.get("assignments_record");
+					processedAssigments.add(record);
+					employeeObject.put("assignments_record", processedAssigments);
+					entries.put(uid, employeeObject);
+				}
+				record = "";
+
+			}
+
+			if (!entries.isEmpty()) {
+				for (String entrieId : entries.keySet()) {
+					employeeObject = entries.get(entrieId);
+					connectorObject = ((ObjectBuilderStrategy) strategy).buildConnectorObject(employeeObject,
+							uidAttributeName, primariId);
+					handler.handle(connectorObject);
+				}
+			}
+
+		}
+
+	}
+}
