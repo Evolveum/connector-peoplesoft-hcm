@@ -1,6 +1,5 @@
 package com.evolveum.polygon.hcm;
 
-import java.net.ConnectException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +11,10 @@ public interface HandlingStrategy {
 	public static String ID = "Extract_Employee_Person_ID";
 	public static final String DOT = ".";
 	public static final String DELIMITER = "\\_";
+	public static final String ASSIGNMENTTAG = "Assignment";
 
 	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf, ResultsHandler handler,
-			Map<String, Object> schemaAttributeMap, Filter query) throws ConnectException;
+			Map<String, Object> schemaAttributeMap, Filter query);
 
 	public String processMultiValuedAttributes(Map<String, String> multiValuedAttributeBuffer);
 
@@ -27,6 +27,6 @@ public interface HandlingStrategy {
 			Map<String, Object> schemaAttributeMap);
 
 	public Boolean checkFilter(String endName, String value, Filter filter, String uidAttributeName);
-	
+
 	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler);
 }

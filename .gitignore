@@ -17,3 +17,5 @@ test-output/
 .project
 src/main/java/com/evolveum/polygon/hcm/Main.java
 exampleData/
+tests/
+

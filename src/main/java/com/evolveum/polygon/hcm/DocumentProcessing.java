@@ -2,9 +2,6 @@ package com.evolveum.polygon.hcm;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +22,6 @@ import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
-
 public class DocumentProcessing implements HandlingStrategy {
 
 	private static final Log LOGGER = Log.getLog(DocumentProcessing.class);
@@ -41,29 +37,18 @@ public class DocumentProcessing implements HandlingStrategy {
 	private static final String END = "endElement";
 	private static final String VALUE = "value";
 	private static final String CLOSE = "close";
+
 	private static Boolean elementIsEmployeeData = false;
 	private static Boolean elementIsMultiValued = false;
+	// private static Boolean assigmentIsActive = false;
 
-	private static Map<String, Object> attributeMap = new HashMap<String, Object>();
+	private Map<String, Object> attributeMap = new HashMap<String, Object>();
 
 	static Map<String, String> multiValuedAttributeBuffer = new HashMap<String, String>();
-	static Map<String, String> specialCharacters = new HashMap<String, String>();
 	private static List<String> multiValuedAttributesList = new ArrayList<String>();
 
-	static {
-		
-		specialCharacters.put("'", "&apos;");
-		specialCharacters.put("\"", "&quot;");
-		specialCharacters.put(">", "&gt;");
-		specialCharacters.put("&", "&amp;");
-		specialCharacters.put("<", "&apos;");
-		
-		multiValuedAttributesList.add("e-mail_address_record");
-		multiValuedAttributesList.add("phones_record");
-	}
-
 	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf, ResultsHandler handler,
-			Map<String, Object> schemaAttributeMap, Filter query) throws ConnectException {
+			Map<String, Object> schemaAttributeMap, Filter query) {
 
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		try {
@@ -73,9 +58,9 @@ public class DocumentProcessing implements HandlingStrategy {
 			String startName = "";
 			String value = null;
 
-			StringBuilder assigmentXMLBuilder = null;
-			
-			List<String> builderList= new ArrayList<String>();
+			StringBuilder assignmentXMLBuilder = null;
+
+			List<String> builderList = new ArrayList<String>();
 
 			Integer nOfIterations = 0;
 			Boolean isSubjectToQuery = false;
@@ -98,6 +83,7 @@ public class DocumentProcessing implements HandlingStrategy {
 					if (!elementIsEmployeeData) {
 
 						if (startName.equals(EMPLOYEES)) {
+
 							if (dictionary.contains(nOfIterations.toString())) {
 								break;
 							} else {
@@ -109,15 +95,15 @@ public class DocumentProcessing implements HandlingStrategy {
 					} else {
 
 						if (!isAssigment) {
-							if (!"assignments_record".equals(startName)) {
+							if (!ASSIGNMENTTAG.equals(startName)) {
 
 							} else {
-								assigmentXMLBuilder = new StringBuilder();
+								assignmentXMLBuilder = new StringBuilder();
 								isAssigment = true;
 							}
 						} else {
 
-							processAssigment(startName, null, START,builderList, assigmentXMLBuilder);
+							builderList = processAssignment(startName, null, START, builderList);
 						}
 
 						if (multiValuedAttributesList.contains(startName)) {
@@ -143,7 +129,7 @@ public class DocumentProcessing implements HandlingStrategy {
 								valueBuilder = new StringBuilder(characters.getData().toString());
 							}
 							value = valueBuilder.toString();
-							//value = StringEscapeUtils.escapeXml10(value);
+							// value = StringEscapeUtils.escapeXml10(value);
 							// LOGGER.info("The attribute value for: {0} is
 							// {1}", startName, value);
 						}
@@ -167,17 +153,18 @@ public class DocumentProcessing implements HandlingStrategy {
 
 								if (!isAssigment) {
 									if (!elementIsMultiValued) {
+
 										attributeMap.put(startName, value);
 									} else {
 
 										multiValuedAttributeBuffer.put(startName, value);
 									}
 								} else {
-								
-									value = StringEscapeUtils.escapeXml10(value);
-									processAssigment(null, value, VALUE,builderList, assigmentXMLBuilder);
 
-									processAssigment(endName, null, END,builderList, assigmentXMLBuilder);
+									value = StringEscapeUtils.escapeXml10(value);
+									builderList = processAssignment(endName, value, VALUE, builderList);
+
+									builderList = processAssignment(endName, null, END, builderList);
 								}
 								// LOGGER.info("Attribute name: {0} and the
 								// Attribute value: {1}", endName, value);
@@ -188,19 +175,25 @@ public class DocumentProcessing implements HandlingStrategy {
 
 								attributeMap = handleEmployeeData(attributeMap, schemaAttributeMap, handler,
 										uidAttributeName, primariId);
+
 								elementIsEmployeeData = false;
 
-							} else if (endName.equals("assignments_record")) {
-								
-								processAssigment(endName, null, CLOSE,builderList, assigmentXMLBuilder);
-								
-								for(String records : builderList){
-									assigmentXMLBuilder.append(records);
-									
+							} else if (endName.equals(ASSIGNMENTTAG)) {
+
+								builderList = processAssignment(endName, null, CLOSE, builderList);
+
+								// if (assigmentIsActive) {
+
+								for (String records : builderList) {
+									assignmentXMLBuilder.append(records);
+
 								}
-								
-								attributeMap.put("assignments_record", assigmentXMLBuilder.toString());
+								attributeMap.put(ASSIGNMENTTAG, assignmentXMLBuilder.toString());
+								// } else {
+								// }
+
 								builderList = new ArrayList<String>();
+								// assigmentIsActive = false;
 								isAssigment = false;
 
 							} else if (multiValuedAttributesList.contains(endName)) {
@@ -217,16 +210,16 @@ public class DocumentProcessing implements HandlingStrategy {
 		} catch (FileNotFoundException e) {
 			StringBuilder errorBuilder = new StringBuilder("File not found at the specified path.")
 					.append(e.getLocalizedMessage());
-			LOGGER.error("File not found at the specified paths: {0}", e);
-			throw new ConnectException(errorBuilder.toString());
+			LOGGER.error("File not found at the specified path: {0}", e);
+			throw new ConnectorException(errorBuilder.toString());
 		} catch (XMLStreamException e) {
 
 			LOGGER.error("Unexpected processing error while parsing the .xml document : {0}", e);
 
 			StringBuilder errorBuilder = new StringBuilder(
-					"Unexpected processing error while parsing the .xml document.").append(e.getLocalizedMessage());
+					"Unexpected processing error while parsing the .xml document. ").append(e.getLocalizedMessage());
 
-			throw new ConnectException(errorBuilder.toString());
+			throw new ConnectorException(errorBuilder.toString());
 		}
 		return attributeMap;
 
@@ -327,29 +320,40 @@ public class DocumentProcessing implements HandlingStrategy {
 
 	}
 
-	public List<String> processAssigment(String attributeName, String attributeValue, String elementType,List<String> builderList,
-			StringBuilder assigmentXMLBuilder) {
+	public List<String> processAssignment(String attributeName, String attributeValue, String elementType,
+			List<String> builderList) {
 
 		if (START.equals(elementType)) {
 			builderList.add(OABRACET);
 			builderList.add(attributeName);
 			builderList.add(SLASH);
-			builderList.add(CABRACET);	
+			builderList.add(CABRACET);
 		} else if (END.equals(elementType)) {
-		builderList.remove(builderList.size()-3);
-		
-		builderList.add(OABRACET);
-		builderList.add(SLASH);
-		builderList.add(attributeName);
-		builderList.add(CABRACET);
+			builderList.remove(builderList.size() - 3);
 
-		} else if (VALUE.equals(elementType)){
-			
+			builderList.add(OABRACET);
+			builderList.add(SLASH);
+			builderList.add(attributeName);
+			builderList.add(CABRACET);
+
+		} else if (VALUE.equals(elementType)) {
+
+			// if ("Assignment_Status_Type".equals(attributeName)) {
+			//
+			// if ("ACTIVE".equals(attributeValue)) {
+			//
+			// assigmentIsActive = true;
+			// }
+			//
+			// }
 			builderList.add(attributeValue);
-		
-		} else if (CLOSE.equals(elementType)){
-			builderList.add(0, "<assignments_record>");
-			builderList.add("</assignments_record>");
+
+		} else if (CLOSE.equals(elementType)) {
+			StringBuilder buildEndTag = new StringBuilder(OABRACET).append(ASSIGNMENTTAG).append(CABRACET);
+
+			builderList.add(0, buildEndTag.toString());
+			buildEndTag.insert(1, SLASH);
+			builderList.add(buildEndTag.toString());
 		}
 		return builderList;
 

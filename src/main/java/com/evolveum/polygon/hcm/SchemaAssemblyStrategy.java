@@ -25,11 +25,11 @@ public class SchemaAssemblyStrategy extends DocumentProcessing implements Handli
 		builder.setType(ObjectClass.ACCOUNT_NAME);
 
 		for (String attributeName : attributeMap.keySet()) {
-			
-			if("Assignment_Status_Type".equals(attributeName)){
+
+			if ("Assignment_Status_Type".equals(attributeName)) {
 				builder.addAttributeInfo(OperationalAttributeInfos.ENABLE);
-				
-			} else if ("assignments_record".equals(attributeName)){
+
+			} else if ("Assignment".equals(attributeName)) {
 				AttributeInfoBuilder infoBuilder = new AttributeInfoBuilder(attributeName);
 				infoBuilder.setUpdateable(true);
 				infoBuilder.setCreateable(true);
@@ -37,20 +37,18 @@ public class SchemaAssemblyStrategy extends DocumentProcessing implements Handli
 				infoBuilder.setType(String.class);
 				infoBuilder.setMultiValued(true);
 				builder.addAttributeInfo(infoBuilder.build());
-			}else{
-			AttributeInfoBuilder infoBuilder = new AttributeInfoBuilder(attributeName);
+			} else {
+				AttributeInfoBuilder infoBuilder = new AttributeInfoBuilder(attributeName);
 
-			infoBuilder.setUpdateable(true);
-			infoBuilder.setCreateable(true);
-			infoBuilder.setReadable(true);
+				infoBuilder.setUpdateable(true);
+				infoBuilder.setCreateable(true);
+				infoBuilder.setReadable(true);
 
-			infoBuilder.setType(String.class);
-			builder.addAttributeInfo(infoBuilder.build());
-		}
+				infoBuilder.setType(String.class);
+				builder.addAttributeInfo(infoBuilder.build());
 			}
-		
-		
-		
+		}
+
 		return builder.build();
 
 	}
@@ -63,7 +61,7 @@ public class SchemaAssemblyStrategy extends DocumentProcessing implements Handli
 		if (FIRSTFLAG.equals(flag)) {
 
 			if (iterations.isEmpty()) {
-				dictionary.add("50"); 
+				dictionary.add("100");
 			} else {
 				dictionary.add(iterations);
 

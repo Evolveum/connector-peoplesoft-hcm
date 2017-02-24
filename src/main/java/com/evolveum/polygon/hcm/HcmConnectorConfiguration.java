@@ -15,7 +15,7 @@ public class HcmConnectorConfiguration extends AbstractConfiguration implements 
 	private String UIDATTRIBUTE;
 	private String PRIMARIID;
 
-	@ConfigurationProperty(order = 1, displayMessageKey = "File path", groupMessageKey = "basic.group", helpMessageKey = "Please provide the path to the file.", required = true, confidential = false)
+	@ConfigurationProperty(order = 1, displayMessageKey = "file.display", groupMessageKey = "basic.group", helpMessageKey = "file.help", required = true, confidential = false)
 	public String getFilePath() {
 		return FILE;
 	}
@@ -24,7 +24,7 @@ public class HcmConnectorConfiguration extends AbstractConfiguration implements 
 		FILE = file;
 	}
 
-	@ConfigurationProperty(order = 2, displayMessageKey = "Parser iterations", groupMessageKey = "basic.group", helpMessageKey = "Please provide a number value (e.g. 50). The higher the value the more precise the schema.", required = true, confidential = false)
+	@ConfigurationProperty(order = 2, displayMessageKey = "iterations.display", groupMessageKey = "basic.group", helpMessageKey = "iterations.help", required = true, confidential = false)
 	public String getIterations() {
 		return ITERATIONS;
 	}
@@ -33,7 +33,7 @@ public class HcmConnectorConfiguration extends AbstractConfiguration implements 
 		ITERATIONS = iterations;
 	}
 
-	@ConfigurationProperty(order = 3, displayMessageKey = "Unique identifier name", groupMessageKey = "basic.group", helpMessageKey = "Please provide the unique identifier attribute name (e.g. UID).", required = true, confidential = false)
+	@ConfigurationProperty(order = 3, displayMessageKey = "uid.display", groupMessageKey = "basic.group", helpMessageKey = "uid.help", required = true, confidential = false)
 	public String getUidAttribute() {
 		return UIDATTRIBUTE;
 	}
@@ -42,7 +42,7 @@ public class HcmConnectorConfiguration extends AbstractConfiguration implements 
 		UIDATTRIBUTE = uidAttribute;
 	}
 
-	@ConfigurationProperty(order = 4, displayMessageKey = "Name attribute", groupMessageKey = "basic.group", helpMessageKey = "Please provide the attribute representing the name of an Employee.", required = true, confidential = false)
+	@ConfigurationProperty(order = 4, displayMessageKey = "name.display", groupMessageKey = "basic.group", helpMessageKey = "name.help", required = true, confidential = false)
 	public String getPrimaryId() {
 		return PRIMARIID;
 	}

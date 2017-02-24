@@ -2,8 +2,6 @@ package com.evolveum.polygon.hcm;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,78 +24,78 @@ public class XMLParser {
 
 	public Map<String, String> parseXmlToMap(String xml) {
 		Map<String, String> assigmentMap = new HashMap<String, String>();
-		
-		if(xml!=null&&!xml.isEmpty()){
-		try {
-			
-		//xml = URLEncoder.encode(xml, "UTF-8");
-		XMLInputFactory factory = XMLInputFactory.newInstance();
-		String value = "";
-		String startName = "";
-		InputStream stream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
-		boolean isRootElement = true;
-		
 
-			XMLEventReader eventReader = factory.createXMLEventReader(stream);
-			while (eventReader.hasNext()) {
+		if (xml != null && !xml.isEmpty()) {
+			try {
 
-				XMLEvent event = eventReader.nextEvent();
+				// xml = URLEncoder.encode(xml, "UTF-8");
+				XMLInputFactory factory = XMLInputFactory.newInstance();
+				String value = "";
+				String startName = "";
+				InputStream stream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
+				boolean isRootElement = true;
 
-				Integer code = event.getEventType();
+				XMLEventReader eventReader = factory.createXMLEventReader(stream);
+				while (eventReader.hasNext()) {
 
-				if (code == XMLStreamConstants.START_ELEMENT) {
+					XMLEvent event = eventReader.nextEvent();
 
-					StartElement startElement = event.asStartElement();
-					startName = startElement.getName().getLocalPart();
+					Integer code = event.getEventType();
 
-					if (!isRootElement) {
-						assigmentMap.put(startName, null);
-					} else {
-						isRootElement = false;
-					}
-				} else if (code == XMLStreamConstants.CHARACTERS) {
+					if (code == XMLStreamConstants.START_ELEMENT) {
 
-					Characters characters = event.asCharacters();
+						StartElement startElement = event.asStartElement();
+						startName = startElement.getName().getLocalPart();
 
-					if (!characters.isWhiteSpace()) {
-						StringBuilder valueBuilder;
-						if (value != null) {
-							valueBuilder = new StringBuilder(value).append("").append(characters.getData().toString());
+						if (!isRootElement) {
+							assigmentMap.put(startName, null);
 						} else {
-							valueBuilder = new StringBuilder(characters.getData().toString());
+							isRootElement = false;
 						}
-						value = valueBuilder.toString();
+					} else if (code == XMLStreamConstants.CHARACTERS) {
 
-					}
-				} else if (code == XMLStreamConstants.END_ELEMENT) {
+						Characters characters = event.asCharacters();
 
-					EndElement endElement = event.asEndElement();
-					String endName = endElement.getName().getLocalPart();
+						if (!characters.isWhiteSpace()) {
+							StringBuilder valueBuilder;
+							if (value != null) {
+								valueBuilder = new StringBuilder(value).append("")
+										.append(characters.getData().toString());
+							} else {
+								valueBuilder = new StringBuilder(characters.getData().toString());
+							}
+							value = valueBuilder.toString();
 
-					if (endName.equals(startName)) {
-						if (value != null) {
-
-							assigmentMap.put(endName, value);
-
-							value = null;
 						}
-					} else {
-						LOGGER.info("No value bewen xml tags, tag name : {0}", endName);
-					}
+					} else if (code == XMLStreamConstants.END_ELEMENT) {
 
-				} else if (code == XMLStreamConstants.END_DOCUMENT) {
-					isRootElement = true;
+						EndElement endElement = event.asEndElement();
+						String endName = endElement.getName().getLocalPart();
+
+						if (endName.equals(startName)) {
+							if (value != null) {
+
+								assigmentMap.put(endName, value);
+
+								value = null;
+							}
+						} else {
+							LOGGER.info("No value between xml tags, tag name : {0}", endName);
+						}
+
+					} else if (code == XMLStreamConstants.END_DOCUMENT) {
+						isRootElement = true;
+					}
 				}
+
+			} catch (XMLStreamException e) {
+
+				StringBuilder error = new StringBuilder("Xml stream exception wile parsing xml string")
+						.append(e.getLocalizedMessage());
+				throw new ConnectorException(error.toString());
 			}
-
-		} catch (XMLStreamException e) {
-
-			StringBuilder error = new StringBuilder("Xml stream exception wile parsing xml string")
-					.append(e.getLocalizedMessage());
-			throw new ConnectorException(error.toString());
-	}
 		}
-		
+
 		return assigmentMap;
 	}
 

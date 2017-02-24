@@ -1,33 +1,29 @@
 package com.evolveum.polygon.hcm;
 
-import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.ObjectClassInfo;
 import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 import org.identityconnectors.framework.common.objects.Schema;
 import org.identityconnectors.framework.common.objects.SchemaBuilder;
-import org.identityconnectors.framework.common.objects.Uid;
-import org.identityconnectors.framework.common.objects.filter.ContainsFilter;
-import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
-import org.identityconnectors.framework.spi.operations.DeleteOp;
 import org.identityconnectors.framework.spi.operations.SchemaOp;
 import org.identityconnectors.framework.spi.operations.SearchOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
 
 @ConnectorClass(displayNameKey = "HcmConnector.connector.display", configurationClass = HcmConnectorConfiguration.class)
-public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, TestOp, DeleteOp {
+public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, TestOp {
 
 	private HcmConnectorConfiguration configuration;
 	private Schema schema = null;
@@ -36,6 +32,17 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 
 	@Override
 	public void test() {
+		HandlingStrategy strategy = new SchemaAssemblyStrategy();
+		((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
+		Map<String, Object> schemaMap;
+
+		schemaMap = strategy.parseXMLData(configuration, null, null, null);
+
+		if (schemaMap.isEmpty()) {
+			throw new ConnectorException(
+					"No schema information was returned by the parser, please check if the configuration and the hcm resource is valid");
+		}
+
 	}
 
 	@Override
@@ -51,34 +58,22 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 	@Override
 	public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
 
-		LOGGER.info("The fiter query: {0}", query);
-		
+		LOGGER.info("The filter query: {0}", query);
+
 		HandlingStrategy strategy = new SchemaAssemblyStrategy();
 		((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
 		Map<String, Object> schemaMap;
-		try {
-			schemaMap = strategy.parseXMLData(configuration, handler, null, null);
 
-			if (query == null) {
-				strategy = new ObjectBuilderStrategy();
-				strategy.parseXMLData(configuration, handler, schemaMap, query);
+		schemaMap = strategy.parseXMLData(configuration, handler, null, null);
 
-			} else if (query instanceof EqualsFilter || query instanceof ContainsFilter) {
-				strategy = new FilterQueryStrategy();
-				strategy.parseXMLData(configuration, handler, schemaMap, query);
+		if (query == null) {
+			strategy = new ObjectBuilderStrategy();
 
-			} else {
+			strategy.parseXMLData(configuration, handler, schemaMap, query);
 
-				LOGGER.warn("Unsupported action");
-
-			}
-
-		} catch (ConnectException e) {
-
-			StringBuilder errorBuilder = new StringBuilder("An exception occurred while processing the query: ")
-					.append(e.getLocalizedMessage());
-
-			new ConnectException(errorBuilder.toString());
+		} else {
+			strategy = new FilterQueryStrategy();
+			strategy.parseXMLData(configuration, handler, schemaMap, query);
 		}
 
 	}
@@ -92,31 +87,22 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 			HandlingStrategy strategy = new SchemaAssemblyStrategy();
 
 			((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
-			try {
-				attributeMap = strategy.parseXMLData(configuration, null, null, null);
 
-				ObjectClassInfo oclassInfo = ((SchemaAssemblyStrategy) strategy).buildSchema(attributeMap);
+			attributeMap = strategy.parseXMLData(configuration, null, null, null);
 
-				schemaBuilder.defineObjectClass(oclassInfo);
+			ObjectClassInfo oclassInfo = ((SchemaAssemblyStrategy) strategy).buildSchema(attributeMap);
 
-				this.schema = schemaBuilder.build();
+			schemaBuilder.defineObjectClass(oclassInfo);
 
-				LOGGER.info("The schema: {0}", this.schema);
+			this.schema = schemaBuilder.build();
 
-			} catch (ConnectException e) {
-
-				StringBuilder errorBuilder = new StringBuilder("An exception occurred while processing the query: ")
-						.append(e.getLocalizedMessage());
-
-				new ConnectException(errorBuilder.toString());
-			}
+			// LOGGER.info("The schema: {0}", this.schema);
 		}
 		return this.schema;
 	}
 
 	@Override
 	public Configuration getConfiguration() {
-		LOGGER.info("Fetch configuration");
 		return this.configuration;
 	}
 
@@ -129,12 +115,6 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 	@Override
 	public void dispose() {
 		this.configuration = null;
-
-	}
-
-	@Override
-	public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
-		LOGGER.warn("Operation not supported");
 
 	}
 

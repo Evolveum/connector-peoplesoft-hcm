@@ -6,17 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeUtil;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
-import org.identityconnectors.framework.common.objects.filter.ContainsFilter;
-import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
+import org.identityconnectors.framework.common.objects.filter.AttributeFilter;
+import org.identityconnectors.framework.common.objects.filter.CompositeFilter;
 import org.identityconnectors.framework.common.objects.filter.Filter;
+import org.identityconnectors.framework.common.objects.filter.NotFilter;
 
 public class FilterQueryStrategy extends DocumentProcessing implements HandlingStrategy {
-
-	private static final String UID = "__UID__";
 
 	private static final Log LOGGER = Log.getLog(FilterQueryStrategy.class);
 
@@ -25,36 +22,37 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 	@Override
 	public Boolean checkFilter(String endName, String value, Filter filter, String uidAttributeName) {
 
-		if (filter != null) {
+		if (filter instanceof NotFilter) { // not filter consistent only with
+											// AttributeFilter as parameter
+			Filter evaluatedFilter = ((NotFilter) filter).getFilter();
+			if (evaluatedFilter instanceof AttributeFilter) {
 
-			Attribute attribute;
-			if (filter instanceof EqualsFilter) {
+				String attributeName = ((AttributeFilter) evaluatedFilter).getName();
 
-				attribute = ((EqualsFilter) filter).getAttribute();
-
-			} else if (filter instanceof ContainsFilter) {
-
-				attribute = ((ContainsFilter) filter).getAttribute();
-			} else {
-
-				throw new UnsupportedOperationException("Filter operation not supported");
-			}
-
-			String attributeValue = AttributeUtil.getAsStringValue(attribute);
-
-			String attributeName = attribute.getName();
-
-			if ((attributeName.equals(UID) && uidAttributeName.equals(endName)) || attributeName.equals(endName)) {
-
-				if (!attributeValue.equals(value)) {
+				if (evaluatedFilter instanceof CompositeFilter) {
 
 					return false;
+				} else if (!(attributeName.equals("__UID__") && uidAttributeName.equals(endName))
+						&& !attributeName.equals(endName)) {
+
+					return true;
 				}
 			}
 
 		}
 
-		return true;
+		if (filter != null) {
+
+			StringBuilder heplerVariableBuilder = new StringBuilder(endName).append(".").append(value).append(".")
+					.append(uidAttributeName);
+
+			Boolean outcome = filter.accept(new FilterHandler(), heplerVariableBuilder.toString());
+
+			return outcome;
+		} else {
+
+			return false;
+		}
 
 	}
 
@@ -129,9 +127,14 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 					uid = employeeUid;
 				}
 
-				if (evaluatedMap.containsKey("assignments_record")) {
+				if (evaluatedMap.containsKey(ASSIGNMENTTAG)) {
 
-					record = (String) evaluatedMap.get("assignments_record");
+					record = (String) evaluatedMap.get(ASSIGNMENTTAG);
+
+				}
+
+				if (record.isEmpty()) {
+					LOGGER.info("Empty assignment record present in the account with the id {0}", employeeUid);
 
 				}
 
@@ -140,14 +143,14 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 					employeeObject.putAll(evaluatedMap);
 					List<String> recordList = new ArrayList<String>();
 					recordList.add(record);
-					employeeObject.put("assignments_record", recordList);
+					employeeObject.put(ASSIGNMENTTAG, recordList);
 					entries.put(uid, employeeObject);
 
 				} else {
 					employeeObject = entries.get(uid);
-					List<String> processedAssigments = (List<String>) employeeObject.get("assignments_record");
+					List<String> processedAssigments = (List<String>) employeeObject.get(ASSIGNMENTTAG);
 					processedAssigments.add(record);
-					employeeObject.put("assignments_record", processedAssigments);
+					employeeObject.put(ASSIGNMENTTAG, processedAssigments);
 					entries.put(uid, employeeObject);
 				}
 				record = "";
