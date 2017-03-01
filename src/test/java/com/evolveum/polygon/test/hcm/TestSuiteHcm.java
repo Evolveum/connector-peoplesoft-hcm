@@ -40,7 +40,7 @@ import com.evolveum.polygon.hcm.HcmConnectorConfiguration;
 
 public class TestSuiteHcm {
 	private static final Log LOGGER = Log.getLog(TestSuiteHcm.class);
-	private String propertyFilePath = "../hcm-connector/testProperties/test.properties";
+	private String propertyFilePath = "../hcm-connector/tests/test.properties";
 	private HcmConnector connector;
 	private HcmConnectorConfiguration configuration;
 

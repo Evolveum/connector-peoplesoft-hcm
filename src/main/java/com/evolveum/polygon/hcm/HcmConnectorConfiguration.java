@@ -26,72 +26,72 @@ import org.identityconnectors.framework.spi.StatefulConfiguration;
 
 public class HcmConnectorConfiguration extends AbstractConfiguration implements StatefulConfiguration {
 
-	private String FILE;
-	private String ITERATIONS;
-	private String UIDATTRIBUTE;
-	private String PRIMARIID;
+	private String file;
+	private String iterations;
+	private String uid;
+	private String name;
 
-	@ConfigurationProperty(order = 1, displayMessageKey = "file.display", groupMessageKey = "basic.group", helpMessageKey = "file.help", required = true, confidential = false)
+	@ConfigurationProperty(order = 1, displayMessageKey = "file.display", helpMessageKey = "file.help", required = true, confidential = false)
 	public String getFilePath() {
-		return FILE;
+		return file;
 	}
 
-	public void setFilePath(String file) {
-		FILE = file;
+	public void setFilePath(String filePath) {
+		file = filePath;
 	}
 
-	@ConfigurationProperty(order = 2, displayMessageKey = "iterations.display", groupMessageKey = "basic.group", helpMessageKey = "iterations.help", required = true, confidential = false)
+	@ConfigurationProperty(order = 2, displayMessageKey = "iterations.display", helpMessageKey = "iterations.help", required = true, confidential = false)
 	public String getIterations() {
-		return ITERATIONS;
+		return iterations;
 	}
 
-	public void setIterations(String iterations) {
-		ITERATIONS = iterations;
+	public void setIterations(String iterationNo) {
+		iterations = iterationNo;
 	}
 
-	@ConfigurationProperty(order = 3, displayMessageKey = "uid.display", groupMessageKey = "basic.group", helpMessageKey = "uid.help", required = true, confidential = false)
+	@ConfigurationProperty(order = 3, displayMessageKey = "uid.display", helpMessageKey = "uid.help", required = true, confidential = false)
 	public String getUidAttribute() {
-		return UIDATTRIBUTE;
+		return uid;
 	}
 
 	public void setUidAttribute(String uidAttribute) {
-		UIDATTRIBUTE = uidAttribute;
+		uid = uidAttribute;
 	}
 
-	@ConfigurationProperty(order = 4, displayMessageKey = "name.display", groupMessageKey = "basic.group", helpMessageKey = "name.help", required = true, confidential = false)
+	@ConfigurationProperty(order = 4, displayMessageKey = "name.display", helpMessageKey = "name.help", required = true, confidential = false)
 	public String getPrimaryId() {
-		return PRIMARIID;
+		return name;
 	}
 
 	public void setPrimaryId(String primaryId) {
-		PRIMARIID = primaryId;
+		name = primaryId;
 	}
 
 	@Override
 	public void release() {
-		this.FILE = null;
-		this.ITERATIONS = null;
-		this.UIDATTRIBUTE = null;
-		this.PRIMARIID = null;
+		this.file = null;
+		this.iterations = null;
+		this.uid = null;
+		this.name = null;
 	}
 
 	@Override
 	public void validate() {
-		if (StringUtil.isBlank(FILE)) {
+		if (StringUtil.isBlank(file)) {
 
 			throw new IllegalArgumentException("File path cannot be empty.");
 
 		}
-		if (StringUtil.isBlank(ITERATIONS)) {
+		if (StringUtil.isBlank(iterations)) {
 
 			throw new IllegalArgumentException("Parser iterations cannot be empty.");
 		}
-		if (StringUtil.isBlank(UIDATTRIBUTE)) {
+		if (StringUtil.isBlank(uid)) {
 
 			throw new IllegalArgumentException("Unique identifier name cannot be empty.");
 		}
 
-		if (StringUtil.isBlank(PRIMARIID)) {
+		if (StringUtil.isBlank(name)) {
 
 			throw new IllegalArgumentException("Name attribute cannot be empty.");
 		}
