@@ -77,7 +77,7 @@ public class FilterHandler implements FilterVisitor<Boolean, String> {
 
 	@Override
 	public Boolean visitContainsAllValuesFilter(String p, ContainsAllValuesFilter filter) {
-		// TODO
+		// LOGGER.ok("Processing trough {0} ", filter);
 		Collection<Filter> filterList = buildValueList(filter);
 		AndFilter containFilters = (AndFilter) FilterBuilder.and(filterList);
 		Boolean outcome = containFilters.accept(this, p);
@@ -151,7 +151,7 @@ public class FilterHandler implements FilterVisitor<Boolean, String> {
 	}
 
 	private Boolean evaluateAttributeFilter(AttributeFilter filter, String filterType, String p) {
-
+		// LOGGER.ok("Processing trough {0} ", filter);
 		if (p == null || p.isEmpty()) {
 			return true;
 		} else {
@@ -207,7 +207,7 @@ public class FilterHandler implements FilterVisitor<Boolean, String> {
 	}
 
 	private Boolean evaluateCompositeFilter(CompositeFilter filter, String filterType, String p) {
-
+		// LOGGER.ok("Processing trough {0} ", filter);
 		Boolean outcome = true;
 
 		for (Filter processedFilter : filter.getFilters()) {

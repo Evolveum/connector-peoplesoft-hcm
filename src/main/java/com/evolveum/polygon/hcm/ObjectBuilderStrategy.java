@@ -43,17 +43,19 @@ public class ObjectBuilderStrategy extends DocumentProcessing implements Handlin
 		cob.setObjectClass(ObjectClass.ACCOUNT);
 
 		for (String attributeName : attributes.keySet()) {
+			
+			
 			if (!attributeName.equals("Assignment_Status_Type")) {
 				Object attribute = attributes.get(attributeName);
 				if (!(attribute instanceof ArrayList<?>)) {
-					if (!uidAttributeName.equals(attributeName) || !primariId.equals(attributeName)) {
+					if (!uidAttributeName.equals(attributeName) && !primariId.equals(attributeName)) {
+						
 						cob.addAttribute(attributeName, attribute);
 					}
 				} else {
 
 					Collection<Object> col = new ArrayList<Object>();
 					for (String st : (List<String>) attribute) {
-
 						col.add(st);
 					}
 					cob.addAttribute(attributeName, col);
@@ -79,22 +81,40 @@ public class ObjectBuilderStrategy extends DocumentProcessing implements Handlin
 			Map<String, Object> schemaAttributeMap, ResultsHandler handler, String uidAttributeName, String primariId) {
 
 		if (!attributeMap.isEmpty()) {
+			attributeMap = injectAttributes(attributeMap, schemaAttributeMap);
 
 			String uid = (String) attributeMap.get(uidAttributeName);
 
-			if (uid == null || uid.isEmpty()) {
-
-				StringBuilder errorBuilder = new StringBuilder(
-						"The UID value of an record is missing, please make sure all the record contain a value for the following attribute: ")
-								.append(uidAttributeName);
-
-				throw new ConnectorException(errorBuilder.toString());
-
-			}
-
+			//LOGGER.ok("The processed uid: {0}", uid);
+			
 			if (!buffer.containsKey(uid)) {
 
 				buffer.put(uid, attributeMap);
+
+			} else {
+				StringBuilder idBuilder = null;
+				int order = 0;
+				String originalUid = uid;
+
+				while (buffer.containsKey(uid)) {
+					idBuilder = new StringBuilder(originalUid).append(DOT).append(order);
+					uid = idBuilder.toString();
+					order++;
+				}
+				buffer.put(uid, attributeMap);
+
+				//
+				// if (attributeMap.containsKey(ASSIGMENTID)){
+				// StringBuilder idBuilder = new StringBuilder(uid);
+				// String assigment = attributeMap.get(ASSIGMENTID);
+				// idBuilder.append(DOT).append(assigment);
+				// buffer.put(idBuilder.toString(), attributeMap);
+				//
+				// }else {
+				// LOGGER.error("No assigment number defined for the user: {0}",
+				// uid);
+				// }
+				//
 			}
 
 			attributeMap = new HashMap<String, Object>();
@@ -104,63 +124,107 @@ public class ObjectBuilderStrategy extends DocumentProcessing implements Handlin
 
 	}
 
-	public void handleBufferedData(String uidAttributeName, String primariIdName, ResultsHandler handler) {
+	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler) {
+		HandlingStrategy strategy = new ObjectBuilderStrategy();
 
+		ConnectorObject connectorObject;
+		int lenght = 0;
 		Map<String, Object> evaluatedMap;
-		Map<String, Object> finalMap;
-		String uidValue = "";
-		String primIdValue = "";
+		Map<String, Object> employeeObject = new HashMap<>();
+		Map<String, Map<String, Object>> entries = new HashMap<String, Map<String, Object>>();
+
+		String record = "";
 
 		if (!buffer.isEmpty()) {
 
 			for (String employeeUid : buffer.keySet()) {
 				evaluatedMap = buffer.get(employeeUid);
 
-				uidValue = "";
-				primIdValue = "";
-				finalMap = new HashMap<String, Object>();
+				String[] splitId = employeeUid.split("\\.");
+				String uid;
+				Boolean noAssignment = false;
+				
+				lenght = splitId.length;
 
-				if (evaluatedMap.containsKey(uidAttributeName)) {
-					uidValue = (String) evaluatedMap.get(uidAttributeName);
-					finalMap.put(uidAttributeName, uidValue);
+				if (lenght > 1) {
+					uid = splitId[0];
 				} else {
+					uid = employeeUid;
+				}
 
+				if (evaluatedMap.containsKey(ASSIGNMENTTAG)) {
+
+					record = (String) evaluatedMap.get(ASSIGNMENTTAG);
+					noAssignment = false;
+				}else {
+					
+					noAssignment=true;
+				}
+				
+				if (evaluatedMap.containsKey(uidAttributeName)) {
+					
+					String evalUid=	(String) evaluatedMap.get(primariId);
+					
+					if (evalUid==null || evalUid.isEmpty()){
 					StringBuilder errorBuilder = new StringBuilder(
 							"UID attribute value missing from a record please make sure all the record contain the value for the following attribute: ")
 									.append(uidAttributeName);
 
 					throw new ConnectorException(errorBuilder.toString());
-
-				}
-				if (evaluatedMap.containsKey(primariIdName)) {
-					primIdValue = (String) evaluatedMap.get(primariIdName);
-
-					finalMap.put(primariIdName, primIdValue);
-
-				} else {
-					StringBuilder errorBuilder;
-					if (uidValue != null) {
-						errorBuilder = new StringBuilder("Name attribute missing from the record with the UID: ")
-								.append(uidValue)
-								.append(" .Please make sure that all the attributes have the following attribute: ")
-								.append(primariIdName);
-						LOGGER.error(
-								"Name attribute value missing from an record, the uid: {0} .Please make sure that all the attributes have the following attribute: {1}",
-								uidValue, primariIdName);
-					} else {
-						errorBuilder = new StringBuilder(
-								"Name attribute value missing from an record .Please make sure that all the attributes have the following attribute: ")
-										.append(primariIdName);
-						LOGGER.error(
-								"Name attribute value missing from an record .Please make sure that all the attributes have the following attribute: {0}",
-								primariIdName);
 					}
+				}
+				if (evaluatedMap.containsKey(primariId)) {
+					
+				String evalPid=	(String) evaluatedMap.get(primariId);
+				if (evalPid==null || evalPid.isEmpty()){
+					StringBuilder errorBuilder = new StringBuilder(
+								"Name attribute value missing from an record .Please make sure that all the attributes have the following attribute: ")
+										.append(primariId);
 					throw new ConnectorException(errorBuilder.toString());
 				}
+				}
+				
+				
 
-				ConnectorObject connectorObject = buildConnectorObject(finalMap, uidAttributeName, primariIdName);
-				handler.handle(connectorObject);
+				if (record.isEmpty()) {
+					LOGGER.info("Empty assignment record present in the account with the id {0}", employeeUid);
+
+				}
+
+				if (!entries.containsKey(uid)) {
+					employeeObject = new HashMap<String, Object>();
+					employeeObject.putAll(evaluatedMap);
+					
+					if (noAssignment){
+					List<String> recordList = new ArrayList<String>();
+					recordList.add(record);
+					employeeObject.put(ASSIGNMENTTAG, recordList);
+					}
+					entries.put(uid, employeeObject);
+
+				} else {
+					if (noAssignment){
+					employeeObject = entries.get(uid);
+					List<String> processedAssigments = (List<String>) employeeObject.get(ASSIGNMENTTAG);
+					processedAssigments.add(record);
+					employeeObject.put(ASSIGNMENTTAG, processedAssigments);
+					entries.put(uid, employeeObject);
+					}
+				}
+				
+				record = "";
+
 			}
+
+			if (!entries.isEmpty()) {
+				for (String entrieId : entries.keySet()) {
+					employeeObject = entries.get(entrieId);
+					connectorObject = ((ObjectBuilderStrategy) strategy).buildConnectorObject(employeeObject,
+							uidAttributeName, primariId);
+					handler.handle(connectorObject);
+				}
+			}
+
 		}
 
 	}

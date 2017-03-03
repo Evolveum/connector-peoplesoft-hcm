@@ -118,6 +118,7 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 	}
 
 	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler) {
+		LOGGER.ok("Processing trough buffered data");
 		HandlingStrategy strategy = new ObjectBuilderStrategy();
 
 		ConnectorObject connectorObject;
@@ -150,7 +151,7 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 				}
 
 				if (record.isEmpty()) {
-					LOGGER.info("Empty assignment record present in the account with the id {0}", employeeUid);
+					LOGGER.ok("Empty assignment record present in the account with the id {0}", employeeUid);
 
 				}
 

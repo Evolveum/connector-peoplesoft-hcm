@@ -19,6 +19,7 @@ package com.evolveum.polygon.hcm;
 import java.util.List;
 import java.util.Map;
 
+import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
@@ -45,4 +46,6 @@ public interface HandlingStrategy {
 	public Boolean checkFilter(String endName, String value, Filter filter, String uidAttributeName);
 
 	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler);
+	
+	public void evaluateOptions(OperationOptions options);
 }

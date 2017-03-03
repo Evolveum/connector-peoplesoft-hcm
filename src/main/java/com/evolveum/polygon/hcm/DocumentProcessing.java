@@ -34,7 +34,8 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
+import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 
@@ -54,6 +55,8 @@ public class DocumentProcessing implements HandlingStrategy {
 	private static final String VALUE = "value";
 	private static final String CLOSE = "close";
 
+	public static final String OPTION_ATTRIBUTES_TO_GET_ = "ATTRS_TO_GET";
+
 	private static Boolean elementIsEmployeeData = false;
 	private static Boolean elementIsMultiValued = false;
 	// private static Boolean assigmentIsActive = false;
@@ -62,6 +65,8 @@ public class DocumentProcessing implements HandlingStrategy {
 
 	static Map<String, String> multiValuedAttributeBuffer = new HashMap<String, String>();
 	private static List<String> multiValuedAttributesList = new ArrayList<String>();
+
+	private List<String> attrsToGet = new ArrayList<>();
 
 	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf, ResultsHandler handler,
 			Map<String, Object> schemaAttributeMap, Filter query) {
@@ -81,9 +86,22 @@ public class DocumentProcessing implements HandlingStrategy {
 			Integer nOfIterations = 0;
 			Boolean isSubjectToQuery = false;
 			Boolean isAssigment = false;
+			Boolean evaluateAttr = true;
+			Boolean specificAttributeQuery = false;
 
 			XMLEventReader eventReader = factory.createXMLEventReader(new FileReader(conf.getFilePath()));
 			List<String> dictionary = populateDictionary(FIRSTFLAG);
+
+			if (!attrsToGet.isEmpty()) {
+
+				attrsToGet.add(uidAttributeName);
+				attrsToGet.add(primariId);
+				specificAttributeQuery = true;
+				evaluateAttr = false;
+				LOGGER.ok("The uid and primary id were added to the queried attribute list");
+
+				schemaAttributeMap = modifySchemaAttributeMap(schemaAttributeMap);
+			}
 
 			while (eventReader.hasNext()) {
 
@@ -95,6 +113,11 @@ public class DocumentProcessing implements HandlingStrategy {
 
 					StartElement startElement = event.asStartElement();
 					startName = startElement.getName().getLocalPart();
+
+					if (!evaluateAttr && attrsToGet.contains(startName)) {
+
+						evaluateAttr = true;
+					}
 
 					if (!elementIsEmployeeData) {
 
@@ -108,7 +131,7 @@ public class DocumentProcessing implements HandlingStrategy {
 								nOfIterations++;
 							}
 						}
-					} else {
+					} else if (evaluateAttr) {
 
 						if (!isAssigment) {
 							if (!ASSIGNMENTTAG.equals(startName)) {
@@ -131,7 +154,7 @@ public class DocumentProcessing implements HandlingStrategy {
 
 				} else if (elementIsEmployeeData) {
 
-					if (code == XMLStreamConstants.CHARACTERS) {
+					if (code == XMLStreamConstants.CHARACTERS && evaluateAttr) {
 
 						Characters characters = event.asCharacters();
 
@@ -164,59 +187,66 @@ public class DocumentProcessing implements HandlingStrategy {
 							endName = EMPLOYEES;
 						}
 
-						if (endName.equals(startName)) {
-							if (value != null) {
+						if (endName.equals(EMPLOYEES)) {
 
-								if (!isAssigment) {
-									if (!elementIsMultiValued) {
+							attributeMap = handleEmployeeData(attributeMap, schemaAttributeMap, handler,
+									uidAttributeName, primariId);
 
-										attributeMap.put(startName, value);
+							elementIsEmployeeData = false;
+
+						} else if (evaluateAttr) {
+
+							if (endName.equals(startName)) {
+								if (value != null) {
+
+									if (!isAssigment) {
+										if (!elementIsMultiValued) {
+
+											attributeMap.put(startName, value);
+										} else {
+
+											multiValuedAttributeBuffer.put(startName, value);
+										}
 									} else {
 
-										multiValuedAttributeBuffer.put(startName, value);
+										value = StringEscapeUtils.escapeXml10(value);
+										builderList = processAssignment(endName, value, VALUE, builderList);
+
+										builderList = processAssignment(endName, null, END, builderList);
 									}
-								} else {
-
-									value = StringEscapeUtils.escapeXml10(value);
-									builderList = processAssignment(endName, value, VALUE, builderList);
-
-									builderList = processAssignment(endName, null, END, builderList);
+									// LOGGER.info("Attribute name: {0} and the
+									// Attribute value: {1}", endName, value);
+									value = null;
 								}
-								// LOGGER.info("Attribute name: {0} and the
-								// Attribute value: {1}", endName, value);
-								value = null;
-							}
-						} else {
-							if (endName.equals(EMPLOYEES)) {
+							} else {
+								if (endName.equals(ASSIGNMENTTAG)) {
 
-								attributeMap = handleEmployeeData(attributeMap, schemaAttributeMap, handler,
-										uidAttributeName, primariId);
+									builderList = processAssignment(endName, null, CLOSE, builderList);
 
-								elementIsEmployeeData = false;
+									// if (assigmentIsActive) {
 
-							} else if (endName.equals(ASSIGNMENTTAG)) {
+									for (String records : builderList) {
+										assignmentXMLBuilder.append(records);
 
-								builderList = processAssignment(endName, null, CLOSE, builderList);
+									}
 
-								// if (assigmentIsActive) {
+									attributeMap.put(ASSIGNMENTTAG, assignmentXMLBuilder.toString());
+									// } else {
+									// }
 
-								for (String records : builderList) {
-									assignmentXMLBuilder.append(records);
+									builderList = new ArrayList<String>();
+									// assigmentIsActive = false;
+									isAssigment = false;
 
+								} else if (multiValuedAttributesList.contains(endName)) {
+									processMultiValuedAttributes(multiValuedAttributeBuffer);
 								}
-								attributeMap.put(ASSIGNMENTTAG, assignmentXMLBuilder.toString());
-								// } else {
-								// }
-
-								builderList = new ArrayList<String>();
-								// assigmentIsActive = false;
-								isAssigment = false;
-
-							} else if (multiValuedAttributesList.contains(endName)) {
-								processMultiValuedAttributes(multiValuedAttributeBuffer);
 							}
+
 						}
-
+						if (specificAttributeQuery && evaluateAttr) {
+							evaluateAttr = false;
+						}
 					}
 				} else if (code == XMLStreamConstants.END_DOCUMENT) {
 					handleBufferedData(uidAttributeName, primariId, handler);
@@ -227,7 +257,7 @@ public class DocumentProcessing implements HandlingStrategy {
 			StringBuilder errorBuilder = new StringBuilder("File not found at the specified path.")
 					.append(e.getLocalizedMessage());
 			LOGGER.error("File not found at the specified path: {0}", e);
-			throw new ConnectorException(errorBuilder.toString());
+			throw new ConnectorIOException(errorBuilder.toString());
 		} catch (XMLStreamException e) {
 
 			LOGGER.error("Unexpected processing error while parsing the .xml document : {0}", e);
@@ -235,10 +265,19 @@ public class DocumentProcessing implements HandlingStrategy {
 			StringBuilder errorBuilder = new StringBuilder(
 					"Unexpected processing error while parsing the .xml document. ").append(e.getLocalizedMessage());
 
-			throw new ConnectorException(errorBuilder.toString());
+			throw new ConnectorIOException(errorBuilder.toString());
 		}
 		return attributeMap;
 
+	}
+
+	private Map<String, Object> modifySchemaAttributeMap(Map<String, Object> schemaAttributeMap) {
+		schemaAttributeMap.clear();
+
+		for (String attribute : attrsToGet) {
+			schemaAttributeMap.put(attribute, "");
+		}
+		return schemaAttributeMap;
 	}
 
 	public String processMultiValuedAttributes(Map<String, String> multiValuedAttributeBuffer) {
@@ -283,7 +322,7 @@ public class DocumentProcessing implements HandlingStrategy {
 
 	@Override
 	public List<String> populateDictionary(String flag) {
-
+		LOGGER.ok("The dictionary flag which is about to be applied: {0} ", flag);
 		List<String> dictionary = new ArrayList<String>();
 
 		if (FIRSTFLAG.equals(flag)) {
@@ -372,6 +411,34 @@ public class DocumentProcessing implements HandlingStrategy {
 			builderList.add(buildEndTag.toString());
 		}
 		return builderList;
+
+	}
+
+	@Override
+	public void evaluateOptions(OperationOptions options) {
+		LOGGER.ok("Evaluating options");
+
+		if (options != null) {
+			Map<String, Object> returnedOptions = options.getOptions();
+			for (String optionName : returnedOptions.keySet()) {
+
+				if (OPTION_ATTRIBUTES_TO_GET_.equals(optionName)) {
+
+					String[] atg = (String[]) returnedOptions.get(optionName);
+
+					StringBuilder queriedAttributes = new StringBuilder();
+
+					for (int i = 0; i < atg.length; i++) {
+						attrsToGet.add(atg[i]);
+						queriedAttributes.append(atg[i]);
+					}
+
+					LOGGER.ok("The queried attributes: {0}", attrsToGet.toString());
+
+				}
+			}
+
+		}
 
 	}
 

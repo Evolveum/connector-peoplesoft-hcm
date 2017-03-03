@@ -26,6 +26,7 @@ import org.identityconnectors.framework.common.objects.Name;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.ObjectClassInfo;
 import org.identityconnectors.framework.common.objects.ObjectClassInfoBuilder;
+import org.identityconnectors.framework.common.objects.OperationOptionInfoBuilder;
 import org.identityconnectors.framework.common.objects.OperationalAttributeInfos;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 
@@ -52,6 +53,7 @@ public class SchemaAssemblyStrategy extends DocumentProcessing implements Handli
 				infoBuilder.setReadable(true);
 				infoBuilder.setType(String.class);
 				infoBuilder.setMultiValued(true);
+				infoBuilder.setReturnedByDefault(false);
 				builder.addAttributeInfo(infoBuilder.build());
 			} else {
 				AttributeInfoBuilder infoBuilder = new AttributeInfoBuilder(attributeName);
@@ -59,12 +61,12 @@ public class SchemaAssemblyStrategy extends DocumentProcessing implements Handli
 				infoBuilder.setUpdateable(true);
 				infoBuilder.setCreateable(true);
 				infoBuilder.setReadable(true);
-
+				infoBuilder.setReturnedByDefault(false);
 				infoBuilder.setType(String.class);
 				builder.addAttributeInfo(infoBuilder.build());
 			}
 		}
-
+		
 		return builder.build();
 
 	}

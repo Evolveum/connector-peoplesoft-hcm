@@ -67,6 +67,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.tirasa.connid</groupId>
+			<artifactId>connector-framework-internal</artifactId>
+			<version>1.4.2.18</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.5.2</version>

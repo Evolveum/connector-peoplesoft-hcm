@@ -22,9 +22,10 @@ import java.util.Map;
 
 import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.ObjectClassInfo;
+import org.identityconnectors.framework.common.objects.OperationOptionInfoBuilder;
 import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 import org.identityconnectors.framework.common.objects.Schema;
@@ -55,7 +56,7 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 		schemaMap = strategy.parseXMLData(configuration, null, null, null);
 
 		if (schemaMap.isEmpty()) {
-			throw new ConnectorException(
+			throw new ConfigurationException(
 					"No schema information was returned by the parser, please check if the configuration and the hcm resource is valid");
 		}
 
@@ -74,7 +75,19 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 	@Override
 	public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
 
-		LOGGER.info("The filter query: {0}", query);
+		if (query != null) {
+			LOGGER.ok("The filter query: {0}", query);
+		} else {
+			LOGGER.ok("The filter query is null");
+		}
+
+		if (options != null) {
+			LOGGER.ok("The operation options query: {0}", options);
+
+		} else {
+			LOGGER.ok("The options are null");
+
+		}
 
 		HandlingStrategy strategy = new SchemaAssemblyStrategy();
 		((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
@@ -85,10 +98,13 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 		if (query == null) {
 			strategy = new ObjectBuilderStrategy();
 
+			strategy.evaluateOptions(options);
 			strategy.parseXMLData(configuration, handler, schemaMap, query);
 
 		} else {
 			strategy = new FilterQueryStrategy();
+
+			strategy.evaluateOptions(options);
 			strategy.parseXMLData(configuration, handler, schemaMap, query);
 		}
 
@@ -109,10 +125,10 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 			ObjectClassInfo oclassInfo = ((SchemaAssemblyStrategy) strategy).buildSchema(attributeMap);
 
 			schemaBuilder.defineObjectClass(oclassInfo);
-
+			schemaBuilder.defineOperationOption(OperationOptionInfoBuilder.buildAttributesToGet(), SearchOp.class);
 			this.schema = schemaBuilder.build();
 
-			// LOGGER.info("The schema: {0}", this.schema);
+			LOGGER.ok("The schema: {0}", this.schema);
 		}
 		return this.schema;
 	}
@@ -126,6 +142,7 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 	public void init(Configuration configuration) {
 		this.configuration = (HcmConnectorConfiguration) configuration;
 		this.configuration.validate();
+		LOGGER.ok("Connector initialized");
 	}
 
 	@Override
