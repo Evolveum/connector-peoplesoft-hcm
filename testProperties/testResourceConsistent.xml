@@ -1,0 +1,226 @@
+<DATA>
+<Employees>
+						<employees_record>
+							<Person_Date_of_Birth>1955-12-05T00:00:00.000Z</Person_Date_of_Birth>
+							<Person_First_Name>Homer</Person_First_Name>
+							<Person_Last_Name>Simpson</Person_Last_Name>
+							<Person_Middle_Name>Jay</Person_Middle_Name>
+							<Extract_Employee_Person_ID>100000001111111</Extract_Employee_Person_ID>
+							<Person_Known_As/>
+							<Person_Display_Name>Homer Jay Simpson</Person_Display_Name>
+							<Person_Title>MR.</Person_Title>
+							<Extract_Employee_Person_Number>10000001</Extract_Employee_Person_Number>
+						</employees_record>
+						<E-mail_address>
+							<E-Mail_Address>
+								<e-mail_address_record>
+									<Extract_EMail_Address>homer.simpson@testevolveum.com</Extract_EMail_Address>
+									<Extract_EMail_Type>W1</Extract_EMail_Type>
+								</e-mail_address_record>
+							</E-Mail_Address>
+						</E-mail_address>
+						<Address>
+							<Addresses>
+								<addresses_record>
+									<Extract_Address_Country>US</Extract_Address_Country>
+									<Extract_Address_Line1>742 Evergreen Terrace</Extract_Address_Line1>
+									<Extract_Address_Line2/>
+									<Extract_Address_Postal_Code>49007</Extract_Address_Postal_Code>
+									<Extract_Address_Region1/>
+									<Extract_Address_Region2/>
+									<Extract_Address_Town_or_City>Springfield</Extract_Address_Town_or_City>
+								</addresses_record>
+							</Addresses>
+						</Address>
+						<Phone>
+							<Phones>
+								<phones_record>
+									<Extract_Phone_Country_Code_Number>636</Extract_Phone_Country_Code_Number>
+									<Extract_Phone_Number>111 111 111</Extract_Phone_Number>
+									<Extract_Phone_Type>W1</Extract_Phone_Type>
+								</phones_record>
+							</Phones>
+						</Phone>
+						<Legislative_Data>
+							<Person_All_Legislative_Details>
+								<person_all_legislative_details_record>
+									<Extract_People_Legislative_Gender>M</Extract_People_Legislative_Gender>
+								</person_all_legislative_details_record>
+							</Person_All_Legislative_Details>
+						</Legislative_Data>
+						<Assignment>
+							<Assignments>
+								<assignments_record>
+									<Assignment_Effective_Start_Date>1989-17-12T00:00:00.000Z</Assignment_Effective_Start_Date>
+									<Assignment_Effective_End_Date>2022-12-31T00:00:00.000Z</Assignment_Effective_End_Date>
+									<Assignment_Employee_Category>E</Assignment_Employee_Category>
+									<Assignment_Employment_Category>E</Assignment_Employment_Category>
+									<Assignment_Name>Nuclear Safety Inspector</Assignment_Name>
+									<Assignment_Number>E0000001</Assignment_Number>
+									<Assignment_Reason_Code/>
+									<Assignment_Status_Type>ACTIVE</Assignment_Status_Type>
+									<Assignment_System_Person_Type>EMP</Assignment_System_Person_Type>
+									<Assignment_Type>E</Assignment_Type>
+									<Assignment_Job_Code>NNN000-N1-01</Assignment_Job_Code>
+									<Assignment_Job_Name>Nuclear Safety Inspector</Assignment_Job_Name>
+									<Assignment_Position_Name>Nuclear Safety Inspector</Assignment_Position_Name>
+									<Assignment_Location_Name>Springfield Nuclear Power Plant</Assignment_Location_Name>
+									<Assignment_Department_Name>Safety</Assignment_Department_Name>
+									<Assignment_Location_Address_Line1>Springfield</Assignment_Location_Address_Line1>
+									<Assignment_Location_Address_Line2></Assignment_Location_Address_Line2>
+									<Assignment_Location_Address_Line3/>
+									<Assignment_Location_Address_Line4/>
+									<Assignment_Location_Postal_Code>49007</Assignment_Location_Postal_Code>
+									<Assignment_Location_Town_or_City>Springfield</Assignment_Location_Town_or_City>
+									<Assignment_Location_Country>US</Assignment_Location_Country>
+									<Assignment_Legal_Employer_Name>Springfield Power Company</Assignment_Legal_Employer_Name>
+									<Extract_Assignment_Primary_Indicator>Y</Extract_Assignment_Primary_Indicator>
+									<Assignment_Relationship_Start_Date>1989-17-12T00:00:00.000Z</Assignment_Relationship_Start_Date>
+									<Relationship_Actual_Termination_Date/>
+									<Assignment_Relationship_Original_Date_of_Hire>1989-17-12T00:00:00.000Z</Assignment_Relationship_Original_Date_of_Hire>
+									<Assignment_Relationship_Adjusted_Service_Date>1989-17-12T00:00:00.000Z</Assignment_Relationship_Adjusted_Service_Date>
+									<Assignment_Attribute1>Inspector</Assignment_Attribute1>
+									<Assignment_Relationship_Attribute_Date1/>
+									<Assignment_Relationship_Attribute_Date2/>
+									<Assignment_Manager_Person_Number>11000011</Assignment_Manager_Person_Number>
+									<Assignment_Work_Measure_Unit>EE</Assignment_Work_Measure_Unit>
+									<Assignment_Work_Measure_Value>1</Assignment_Work_Measure_Value>
+									<Assignment_Attribute_Number4>10</Assignment_Attribute_Number4>
+									<Assignment_Legislation_Code>US</Assignment_Legislation_Code>
+									<Assignment_Work_at_home>N</Assignment_Work_at_home>
+								</assignments_record>
+								<Legal_Employer>
+									<Legal_Employer>
+										<Legal_Employer_Record>
+											<Legal_Employer_ID>101100001101011</Legal_Employer_ID>
+											<Extract_Legal_Entity_ID>101100001101011</Extract_Legal_Entity_ID>
+											<Legal_Employer_Registration_Number>00000</Legal_Employer_Registration_Number>
+											<Legal_Employer_Legal_Entity_Identifier>SPC</Legal_Employer_Legal_Entity_Identifier>
+											<Legal_Employer_Name>Springfield Power Company</Legal_Employer_Name>
+											<Legal_Employer_Address1>Springfield</Legal_Employer_Address1>
+											<Legal_Employer_Address2/>
+											<Legal_Employer_Address3/>
+											<Legal_Employer_Address4/>
+											<Legal_Employer_Postal_Code>49007</Legal_Employer_Postal_Code>
+											<Legal_Employer_City>Springfield</Legal_Employer_City>
+											<Legal_Employer_Country>US</Legal_Employer_Country>
+										</Legal_Employer_Record>
+									</Legal_Employer>
+								</Legal_Employer>
+							</Assignments>
+						</Assignment>
+						<Citizenships_hierarchy/>
+					</Employees>
+					<Employees>
+						<employees_record>
+							<Person_Date_of_Birth>1975-09-09T00:00:00.000Z</Person_Date_of_Birth>
+							<Person_First_Name>Jane</Person_First_Name>
+							<Person_Last_Name>Doe</Person_Last_Name>
+							<Person_Middle_Name/>
+							<Extract_Employee_Person_ID>111000001111111</Extract_Employee_Person_ID>
+							<Person_Known_As/>
+							<Person_Display_Name>Jane Doe</Person_Display_Name>
+							<Person_Title>MS.</Person_Title>
+							<Extract_Employee_Person_Number>11000001</Extract_Employee_Person_Number>
+						</employees_record>
+						<E-mail_address>
+							<E-Mail_Address>
+								<e-mail_address_record>
+									<Extract_EMail_Address>jane.doe@testevolveum.com</Extract_EMail_Address>
+									<Extract_EMail_Type>W1</Extract_EMail_Type>
+								</e-mail_address_record>
+							</E-Mail_Address>
+						</E-mail_address>
+						<Address>
+							<Addresses>
+								<addresses_record>
+									<Extract_Address_Country>US</Extract_Address_Country>
+									<Extract_Address_Line1>742 Evergreen Terrace</Extract_Address_Line1>
+									<Extract_Address_Line2/>
+									<Extract_Address_Postal_Code>49007</Extract_Address_Postal_Code>
+									<Extract_Address_Region1/>
+									<Extract_Address_Region2/>
+									<Extract_Address_Town_or_City>Springfield</Extract_Address_Town_or_City>
+								</addresses_record>
+							</Addresses>
+						</Address>
+						<Phone>
+							<Phones>
+								<phones_record>
+									<Extract_Phone_Country_Code_Number>636</Extract_Phone_Country_Code_Number>
+									<Extract_Phone_Number>111 101 111</Extract_Phone_Number>
+									<Extract_Phone_Type>W1</Extract_Phone_Type>
+								</phones_record>
+							</Phones>
+						</Phone>
+						<Legislative_Data>
+							<Person_All_Legislative_Details>
+								<person_all_legislative_details_record>
+									<Extract_People_Legislative_Gender>W</Extract_People_Legislative_Gender>
+								</person_all_legislative_details_record>
+							</Person_All_Legislative_Details>
+						</Legislative_Data>
+						<Assignment>
+							<Assignments>
+								<assignments_record>
+									<Assignment_Effective_Start_Date>1999-15-12T00:00:00.000Z</Assignment_Effective_Start_Date>
+									<Assignment_Effective_End_Date>2025-12-31T00:00:00.000Z</Assignment_Effective_End_Date>
+									<Assignment_Employee_Category>E</Assignment_Employee_Category>
+									<Assignment_Employment_Category>E</Assignment_Employment_Category>
+									<Assignment_Name>Nuclear Safety Inspector</Assignment_Name>
+									<Assignment_Number>E0000002</Assignment_Number>
+									<Assignment_Reason_Code/>
+									<Assignment_Status_Type>ACTIVE</Assignment_Status_Type>
+									<Assignment_System_Person_Type>EMP</Assignment_System_Person_Type>
+									<Assignment_Type>E</Assignment_Type>
+									<Assignment_Job_Code>NNN000-N1-01</Assignment_Job_Code>
+									<Assignment_Job_Name>Nuclear Safety Inspector</Assignment_Job_Name>
+									<Assignment_Position_Name>Nuclear Safety Inspector</Assignment_Position_Name>
+									<Assignment_Location_Name>Springfield Nuclear Power Plant</Assignment_Location_Name>
+									<Assignment_Department_Name>Safety</Assignment_Department_Name>
+									<Assignment_Location_Address_Line1>Springfield</Assignment_Location_Address_Line1>
+									<Assignment_Location_Address_Line2></Assignment_Location_Address_Line2>
+									<Assignment_Location_Address_Line3/>
+									<Assignment_Location_Address_Line4/>
+									<Assignment_Location_Postal_Code>49007</Assignment_Location_Postal_Code>
+									<Assignment_Location_Town_or_City>Springfield</Assignment_Location_Town_or_City>
+									<Assignment_Location_Country>US</Assignment_Location_Country>
+									<Assignment_Legal_Employer_Name>Springfield Power Company</Assignment_Legal_Employer_Name>
+									<Extract_Assignment_Primary_Indicator>Y</Extract_Assignment_Primary_Indicator>
+									<Assignment_Relationship_Start_Date>1999-15-12T00:00:00.000Z</Assignment_Relationship_Start_Date>
+									<Relationship_Actual_Termination_Date/>
+									<Assignment_Relationship_Original_Date_of_Hire>1999-15-12T00:00:00.000Z</Assignment_Relationship_Original_Date_of_Hire>
+									<Assignment_Relationship_Adjusted_Service_Date>1999-15-12T00:00:00.000Z</Assignment_Relationship_Adjusted_Service_Date>
+									<Assignment_Attribute1>Inspector</Assignment_Attribute1>
+									<Assignment_Relationship_Attribute_Date1/>
+									<Assignment_Relationship_Attribute_Date2/>
+									<Assignment_Manager_Person_Number>11000011</Assignment_Manager_Person_Number>
+									<Assignment_Work_Measure_Unit>EE</Assignment_Work_Measure_Unit>
+									<Assignment_Work_Measure_Value>1</Assignment_Work_Measure_Value>
+									<Assignment_Attribute_Number4>10</Assignment_Attribute_Number4>
+									<Assignment_Legislation_Code>US</Assignment_Legislation_Code>
+									<Assignment_Work_at_home>N</Assignment_Work_at_home>
+								</assignments_record>
+								<Legal_Employer>
+									<Legal_Employer>
+										<Legal_Employer_Record>
+											<Legal_Employer_ID>101100001101011</Legal_Employer_ID>
+											<Extract_Legal_Entity_ID>101100001101011</Extract_Legal_Entity_ID>
+											<Legal_Employer_Registration_Number>00000</Legal_Employer_Registration_Number>
+											<Legal_Employer_Legal_Entity_Identifier>SPC</Legal_Employer_Legal_Entity_Identifier>
+											<Legal_Employer_Name>Springfield Power Company</Legal_Employer_Name>
+											<Legal_Employer_Address1>Springfield</Legal_Employer_Address1>
+											<Legal_Employer_Address2/>
+											<Legal_Employer_Address3/>
+											<Legal_Employer_Address4/>
+											<Legal_Employer_Postal_Code>49007</Legal_Employer_Postal_Code>
+											<Legal_Employer_City>Springfield</Legal_Employer_City>
+											<Legal_Employer_Country>US</Legal_Employer_Country>
+										</Legal_Employer_Record>
+									</Legal_Employer>
+								</Legal_Employer>
+							</Assignments>
+						</Assignment>
+						<Citizenships_hierarchy/>
+					</Employees>
+</DATA>

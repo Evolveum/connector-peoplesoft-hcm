@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.evolveum.polygon.hcm;
+package com.evolveum.polygon.connector.hcm;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +49,8 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 
 	@Override
 	public void test() {
+		LOGGER.ok("The test operation was executed");
+		
 		HandlingStrategy strategy = new SchemaAssemblyStrategy();
 		((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
 		Map<String, Object> schemaMap;
@@ -74,15 +76,16 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 
 	@Override
 	public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
-
+		LOGGER.ok("The executeQuery operation was executed");
+		
 		if (query != null) {
-			LOGGER.ok("The filter query: {0}", query);
+			LOGGER.info("The filter query: {0}", query);
 		} else {
 			LOGGER.ok("The filter query is null");
 		}
 
 		if (options != null) {
-			LOGGER.ok("The operation options query: {0}", options);
+			LOGGER.info("The operation options query: {0}", options);
 
 		} else {
 			LOGGER.ok("The options are null");
@@ -103,9 +106,9 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 
 		} else {
 			strategy = new FilterQueryStrategy();
-
 			strategy.evaluateOptions(options);
 			strategy.parseXMLData(configuration, handler, schemaMap, query);
+
 		}
 
 	}
@@ -135,6 +138,8 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 
 	@Override
 	public Configuration getConfiguration() {
+		LOGGER.ok("Retrieving the configuration");
+		
 		return this.configuration;
 	}
 
@@ -147,6 +152,8 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 
 	@Override
 	public void dispose() {
+		LOGGER.ok("The dispose operation was executed");
+		
 		this.configuration = null;
 
 	}

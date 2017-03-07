@@ -20,13 +20,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ObjectClass;
+import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.SearchResult;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.identityconnectors.framework.common.objects.filter.FilterBuilder;
@@ -35,12 +42,12 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.evolveum.polygon.hcm.HcmConnector;
-import com.evolveum.polygon.hcm.HcmConnectorConfiguration;
+import com.evolveum.polygon.connector.hcm.HcmConnector;
+import com.evolveum.polygon.connector.hcm.HcmConnectorConfiguration;
 
 public class TestSuiteHcm {
 	private static final Log LOGGER = Log.getLog(TestSuiteHcm.class);
-	private String propertyFilePath = "../hcm-connector/tests/test.properties";
+	private String propertyFilePath = "../hcm-connector/testProperties/test.properties";
 	private HcmConnector connector;
 	private HcmConnectorConfiguration configuration;
 
@@ -219,6 +226,53 @@ public class TestSuiteHcm {
 		connector.executeQuery(ObjectClass.ACCOUNT, notFilter, handler, null);
 
 		Assert.assertFalse(results.isEmpty());
+
+	}
+
+	@Test(dependsOnMethods = { "initializationWithCorrectResource" }, priority = 2, dataProvider = "CONFIGTESTPROVIDER")
+	private void queryOptionsAttributesToGetTest(Boolean v1, Boolean v2) {
+
+		Boolean doesNotContain = false;
+		// TODO
+
+		String option = getProperty("query_options_option");
+		String value = getProperty("query_options_value");
+
+		List<String> attributesToContain = new ArrayList<String>();
+		attributesToContain.add(value);
+		attributesToContain.add("__UID__");
+		attributesToContain.add("__NAME__");
+
+		Map<String, Object> operationOptions = new HashMap<String, Object>();
+
+		String[] attrsToGet = { value };
+
+		operationOptions.put(option, attrsToGet);
+
+		OperationOptions options = new OperationOptions(operationOptions);
+
+		results = new ArrayList<>();
+
+		// LOGGER.info("## The evaluated test: lit all entries ");
+
+		connector.executeQuery(ObjectClass.ACCOUNT, null, handler, options);
+
+		if (!results.isEmpty()) {
+
+			ConnectorObject evaluatedResult = results.get(0);
+			Set<Attribute> attrs = (Set<Attribute>) evaluatedResult.getAttributes();
+
+			for (Attribute attr : attrs) {
+				if (!attributesToContain.contains(attr.getName())) {
+					doesNotContain = true;
+				} else {
+					attributesToContain.remove(attr.getName());
+				}
+			}
+
+		}
+
+		Assert.assertFalse(!attributesToContain.isEmpty() || doesNotContain);
 
 	}
 

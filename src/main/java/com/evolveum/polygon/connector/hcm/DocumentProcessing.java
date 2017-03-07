@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.evolveum.polygon.hcm;
+package com.evolveum.polygon.connector.hcm;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -108,14 +108,14 @@ public class DocumentProcessing implements HandlingStrategy {
 				XMLEvent event = eventReader.nextEvent();
 
 				Integer code = event.getEventType();
-
+				
 				if (code == XMLStreamConstants.START_ELEMENT) {
 
 					StartElement startElement = event.asStartElement();
 					startName = startElement.getName().getLocalPart();
 
 					if (!evaluateAttr && attrsToGet.contains(startName)) {
-
+						
 						evaluateAttr = true;
 					}
 
@@ -124,6 +124,7 @@ public class DocumentProcessing implements HandlingStrategy {
 						if (startName.equals(EMPLOYEES)) {
 
 							if (dictionary.contains(nOfIterations.toString())) {
+								LOGGER.ok("The defined number of iterations has been hit: {0}", nOfIterations.toString());
 								break;
 							} else {
 								startName = "";
@@ -229,7 +230,6 @@ public class DocumentProcessing implements HandlingStrategy {
 										assignmentXMLBuilder.append(records);
 
 									}
-
 									attributeMap.put(ASSIGNMENTTAG, assignmentXMLBuilder.toString());
 									// } else {
 									// }
@@ -245,6 +245,7 @@ public class DocumentProcessing implements HandlingStrategy {
 
 						}
 						if (specificAttributeQuery && evaluateAttr) {
+							
 							evaluateAttr = false;
 						}
 					}
@@ -277,6 +278,7 @@ public class DocumentProcessing implements HandlingStrategy {
 		for (String attribute : attrsToGet) {
 			schemaAttributeMap.put(attribute, "");
 		}
+		
 		return schemaAttributeMap;
 	}
 
@@ -371,7 +373,7 @@ public class DocumentProcessing implements HandlingStrategy {
 
 	}
 
-	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler) {
+	public void handleBufferedData(String uidAttributeName, String primaryId, ResultsHandler handler) {
 
 	}
 
@@ -426,11 +428,13 @@ public class DocumentProcessing implements HandlingStrategy {
 
 					String[] atg = (String[]) returnedOptions.get(optionName);
 
-					StringBuilder queriedAttributes = new StringBuilder();
-
 					for (int i = 0; i < atg.length; i++) {
+						
+						String attribute = atg[i];
+						
+						if(attribute!=null){
 						attrsToGet.add(atg[i]);
-						queriedAttributes.append(atg[i]);
+						}
 					}
 
 					LOGGER.ok("The queried attributes: {0}", attrsToGet.toString());

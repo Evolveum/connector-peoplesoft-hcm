@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.evolveum.polygon.hcm;
+package com.evolveum.polygon.connector.hcm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,6 @@ import org.identityconnectors.framework.common.objects.Name;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.ObjectClassInfo;
 import org.identityconnectors.framework.common.objects.ObjectClassInfoBuilder;
-import org.identityconnectors.framework.common.objects.OperationOptionInfoBuilder;
 import org.identityconnectors.framework.common.objects.OperationalAttributeInfos;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 
@@ -93,7 +92,7 @@ public class SchemaAssemblyStrategy extends DocumentProcessing implements Handli
 
 	@Override
 	public Map<String, Object> handleEmployeeData(Map<String, Object> attributeMap,
-			Map<String, Object> schemaAttributeMap, ResultsHandler handler, String uidAttributeName, String primariId) {
+			Map<String, Object> schemaAttributeMap, ResultsHandler handler, String uidAttributeName, String primaryId) {
 
 		return attributeMap;
 

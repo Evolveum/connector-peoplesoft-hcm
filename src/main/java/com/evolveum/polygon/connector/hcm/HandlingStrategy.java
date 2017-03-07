@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.evolveum.polygon.hcm;
+package com.evolveum.polygon.connector.hcm;
 
 import java.util.List;
 import java.util.Map;
@@ -38,14 +38,14 @@ public interface HandlingStrategy {
 	public List<String> populateDictionary(String flag);
 
 	public Map<String, Object> handleEmployeeData(Map<String, Object> attributeMap,
-			Map<String, Object> schemaAttributeMap, ResultsHandler handler, String uidAttributeName, String primariId);
+			Map<String, Object> schemaAttributeMap, ResultsHandler handler, String uidAttributeName, String primaryId);
 
 	public Map<String, Object> injectAttributes(Map<String, Object> attributeMap,
 			Map<String, Object> schemaAttributeMap);
 
 	public Boolean checkFilter(String endName, String value, Filter filter, String uidAttributeName);
 
-	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler);
+	public void handleBufferedData(String uidAttributeName, String primaryId, ResultsHandler handler);
 	
 	public void evaluateOptions(OperationOptions options);
 }

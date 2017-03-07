@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.evolveum.polygon.hcm;
+package com.evolveum.polygon.connector.hcm;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

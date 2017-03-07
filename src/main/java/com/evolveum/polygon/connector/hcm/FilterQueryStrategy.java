@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.evolveum.polygon.hcm;
+package com.evolveum.polygon.connector.hcm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,12 +117,12 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 
 	}
 
-	public void handleBufferedData(String uidAttributeName, String primariId, ResultsHandler handler) {
+	public void handleBufferedData(String uidAttributeName, String primaryId, ResultsHandler handler) {
 		LOGGER.ok("Processing trough buffered data");
 		HandlingStrategy strategy = new ObjectBuilderStrategy();
 
 		ConnectorObject connectorObject;
-		int lenght = 0;
+		int length = 0;
 		Map<String, Object> evaluatedMap;
 		Map<String, Object> employeeObject = new HashMap<>();
 		Map<String, Map<String, Object>> entries = new HashMap<String, Map<String, Object>>();
@@ -133,15 +133,26 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 
 			for (String employeeUid : buffer.keySet()) {
 				evaluatedMap = buffer.get(employeeUid);
-
 				String[] splitId = employeeUid.split("\\.");
 				String uid;
-				lenght = splitId.length;
 
-				if (lenght > 1) {
+				Boolean noAssignment = false;
+
+				length = splitId.length;
+
+				if (length > 1) {
 					uid = splitId[0];
 				} else {
 					uid = employeeUid;
+				}
+
+				if (evaluatedMap.containsKey(ASSIGNMENTTAG)) {
+
+					record = (String) evaluatedMap.get(ASSIGNMENTTAG);
+					noAssignment = false;
+				} else {
+
+					noAssignment = true;
 				}
 
 				if (evaluatedMap.containsKey(ASSIGNMENTTAG)) {
@@ -151,24 +162,30 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 				}
 
 				if (record.isEmpty()) {
-					LOGGER.ok("Empty assignment record present in the account with the id {0}", employeeUid);
+					// LOGGER.ok("Empty assignment record present in the account
+					// with the id {0}", employeeUid);
 
 				}
 
 				if (!entries.containsKey(uid)) {
 					employeeObject = new HashMap<String, Object>();
 					employeeObject.putAll(evaluatedMap);
-					List<String> recordList = new ArrayList<String>();
-					recordList.add(record);
-					employeeObject.put(ASSIGNMENTTAG, recordList);
+
+					if (!noAssignment) {
+						List<String> recordList = new ArrayList<String>();
+						recordList.add(record);
+						employeeObject.put(ASSIGNMENTTAG, recordList);
+					}
 					entries.put(uid, employeeObject);
 
 				} else {
-					employeeObject = entries.get(uid);
-					List<String> processedAssigments = (List<String>) employeeObject.get(ASSIGNMENTTAG);
-					processedAssigments.add(record);
-					employeeObject.put(ASSIGNMENTTAG, processedAssigments);
-					entries.put(uid, employeeObject);
+					if (!noAssignment) {
+						employeeObject = entries.get(uid);
+						List<String> processedAssigments = (List<String>) employeeObject.get(ASSIGNMENTTAG);
+						processedAssigments.add(record);
+						employeeObject.put(ASSIGNMENTTAG, processedAssigments);
+						entries.put(uid, employeeObject);
+					}
 				}
 				record = "";
 
@@ -177,8 +194,9 @@ public class FilterQueryStrategy extends DocumentProcessing implements HandlingS
 			if (!entries.isEmpty()) {
 				for (String entrieId : entries.keySet()) {
 					employeeObject = entries.get(entrieId);
+
 					connectorObject = ((ObjectBuilderStrategy) strategy).buildConnectorObject(employeeObject,
-							uidAttributeName, primariId);
+							uidAttributeName, primaryId);
 					handler.handle(connectorObject);
 				}
 			}
