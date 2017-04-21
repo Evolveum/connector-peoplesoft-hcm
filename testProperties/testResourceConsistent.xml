@@ -51,7 +51,7 @@
 						<Assignment>
 							<Assignments>
 								<assignments_record>
-									<Assignment_Effective_Start_Date>1989-17-12T00:00:00.000Z</Assignment_Effective_Start_Date>
+									<Assignment_Effective_Start_Date>1989-12-17T00:00:00.000Z</Assignment_Effective_Start_Date>
 									<Assignment_Effective_End_Date>2022-12-31T00:00:00.000Z</Assignment_Effective_End_Date>
 									<Assignment_Employee_Category>E</Assignment_Employee_Category>
 									<Assignment_Employment_Category>E</Assignment_Employment_Category>
@@ -75,10 +75,10 @@
 									<Assignment_Location_Country>US</Assignment_Location_Country>
 									<Assignment_Legal_Employer_Name>Springfield Power Company</Assignment_Legal_Employer_Name>
 									<Extract_Assignment_Primary_Indicator>Y</Extract_Assignment_Primary_Indicator>
-									<Assignment_Relationship_Start_Date>1989-17-12T00:00:00.000Z</Assignment_Relationship_Start_Date>
+									<Assignment_Relationship_Start_Date>1989-12-17T00:00:00.000Z</Assignment_Relationship_Start_Date>
 									<Relationship_Actual_Termination_Date/>
-									<Assignment_Relationship_Original_Date_of_Hire>1989-17-12T00:00:00.000Z</Assignment_Relationship_Original_Date_of_Hire>
-									<Assignment_Relationship_Adjusted_Service_Date>1989-17-12T00:00:00.000Z</Assignment_Relationship_Adjusted_Service_Date>
+									<Assignment_Relationship_Original_Date_of_Hire>1989-12-17T00:00:00.000Z</Assignment_Relationship_Original_Date_of_Hire>
+									<Assignment_Relationship_Adjusted_Service_Date>1989-12-17T00:00:00.000Z</Assignment_Relationship_Adjusted_Service_Date>
 									<Assignment_Attribute1>Inspector</Assignment_Attribute1>
 									<Assignment_Relationship_Attribute_Date1/>
 									<Assignment_Relationship_Attribute_Date2/>
@@ -163,7 +163,7 @@
 						<Assignment>
 							<Assignments>
 								<assignments_record>
-									<Assignment_Effective_Start_Date>1999-15-12T00:00:00.000Z</Assignment_Effective_Start_Date>
+									<Assignment_Effective_Start_Date>1999-12-15T00:00:00.000Z</Assignment_Effective_Start_Date>
 									<Assignment_Effective_End_Date>2025-12-31T00:00:00.000Z</Assignment_Effective_End_Date>
 									<Assignment_Employee_Category>E</Assignment_Employee_Category>
 									<Assignment_Employment_Category>E</Assignment_Employment_Category>
@@ -187,10 +187,10 @@
 									<Assignment_Location_Country>US</Assignment_Location_Country>
 									<Assignment_Legal_Employer_Name>Springfield Power Company</Assignment_Legal_Employer_Name>
 									<Extract_Assignment_Primary_Indicator>Y</Extract_Assignment_Primary_Indicator>
-									<Assignment_Relationship_Start_Date>1999-15-12T00:00:00.000Z</Assignment_Relationship_Start_Date>
+									<Assignment_Relationship_Start_Date>1999-12-15T00:00:00.000Z</Assignment_Relationship_Start_Date>
 									<Relationship_Actual_Termination_Date/>
-									<Assignment_Relationship_Original_Date_of_Hire>1999-15-12T00:00:00.000Z</Assignment_Relationship_Original_Date_of_Hire>
-									<Assignment_Relationship_Adjusted_Service_Date>1999-15-12T00:00:00.000Z</Assignment_Relationship_Adjusted_Service_Date>
+									<Assignment_Relationship_Original_Date_of_Hire>1999-12-15T00:00:00.000Z</Assignment_Relationship_Original_Date_of_Hire>
+									<Assignment_Relationship_Adjusted_Service_Date>1999-12-15T00:00:00.000Z</Assignment_Relationship_Adjusted_Service_Date>
 									<Assignment_Attribute1>Inspector</Assignment_Attribute1>
 									<Assignment_Relationship_Attribute_Date1/>
 									<Assignment_Relationship_Attribute_Date2/>

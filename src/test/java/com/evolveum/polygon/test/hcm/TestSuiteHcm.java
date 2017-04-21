@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
@@ -97,7 +98,7 @@ public class TestSuiteHcm {
 		connector.schema();
 	}
 
-	@Test(expectedExceptions = ConnectorException.class, dependsOnMethods = {
+	@Test(expectedExceptions = ConnectorIOException.class, dependsOnMethods = {
 			"xmlDataInconsistent" }, priority = 1, dataProvider = "CONFIGTESTPROVIDER")
 	private void resourceFileNotFound(Boolean v1, Boolean v2) {
 

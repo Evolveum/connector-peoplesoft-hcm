@@ -78,7 +78,7 @@ public class SchemaAssemblyStrategy extends DocumentProcessing implements Handli
 		if (FIRSTFLAG.equals(flag)) {
 
 			if (iterations.isEmpty()) {
-				dictionary.add("100");
+				dictionary.add("1000");
 			} else {
 				dictionary.add(iterations);
 

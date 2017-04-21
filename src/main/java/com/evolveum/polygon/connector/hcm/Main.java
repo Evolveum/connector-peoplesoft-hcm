@@ -66,12 +66,12 @@ public class Main {
 		 
 		// conn.executeQuery(ObjectClass.ACCOUNT, notTest, handler, null);
 		 
-		for (ConnectorObject object : results) {
-
-			LOGGER.info("the result: {0}", object.toString());
-
-		}	
-		LOGGER.info("the number of results: {0}", results.size());
+//		for (ConnectorObject object : results) {
+//
+//			LOGGER.info("the result: {0}", object.toString());
+//
+//		}	
+//		LOGGER.info("the number of results: {0}", results.size());
 	}
 
 	public static SearchResultsHandler handler = new SearchResultsHandler() {

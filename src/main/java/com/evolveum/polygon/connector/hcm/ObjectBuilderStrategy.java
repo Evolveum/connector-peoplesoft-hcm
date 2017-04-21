@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
@@ -171,7 +172,7 @@ public class ObjectBuilderStrategy extends DocumentProcessing implements Handlin
 								"UID attribute value missing from a record please make sure all the record contain the value for the following attribute: ")
 										.append(uidAttributeName);
 
-						throw new ConnectorException(errorBuilder.toString());
+						throw new ConfigurationException(errorBuilder.toString());
 					}
 				}
 				if (evaluatedMap.containsKey(primaryId)) {
@@ -181,7 +182,7 @@ public class ObjectBuilderStrategy extends DocumentProcessing implements Handlin
 						StringBuilder errorBuilder = new StringBuilder(
 								"Name attribute value missing from an record .Please make sure that all the attributes have the following attribute: ")
 										.append(primaryId);
-						throw new ConnectorException(errorBuilder.toString());
+						throw new ConfigurationException(errorBuilder.toString());
 					}
 				}
 
