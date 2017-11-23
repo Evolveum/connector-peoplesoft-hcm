@@ -112,7 +112,8 @@ public class TestSuiteHcm {
 
 		connector = new HcmConnector();
 		connector.init(configuration);
-		connector.schema();
+		//connector.schema();
+		connector.test();
 	}
 
 	@Test(dependsOnMethods = { "resourceFileNotFound" }, priority = 1, dataProvider = "CONFIGTESTPROVIDER")

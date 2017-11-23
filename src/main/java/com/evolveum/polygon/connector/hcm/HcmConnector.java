@@ -55,7 +55,7 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 		((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
 		Map<String, Object> schemaMap;
 
-		schemaMap = strategy.parseXMLData(configuration, null, null, null);
+		schemaMap = strategy.parseXMLData(configuration);
 
 		if (schemaMap.isEmpty()) {
 			throw new ConfigurationException(
@@ -96,7 +96,7 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 		((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
 		Map<String, Object> schemaMap;
 
-		schemaMap = strategy.parseXMLData(configuration, handler, null, null);
+		schemaMap = strategy.parseXMLData(configuration, handler);
 
 		if (query == null) {
 			strategy = new ObjectBuilderStrategy();
@@ -123,7 +123,7 @@ public class HcmConnector implements Connector, SchemaOp, SearchOp<Filter>, Test
 
 			((SchemaAssemblyStrategy) strategy).setIterations(configuration.getIterations());
 
-			attributeMap = strategy.parseXMLData(configuration, null, null, null);
+			attributeMap = strategy.parseXMLData(configuration);
 
 			ObjectClassInfo oclassInfo = ((SchemaAssemblyStrategy) strategy).buildSchema(attributeMap);
 

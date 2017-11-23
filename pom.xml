@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.evolveum.polygon.hcm</groupId>
 	<artifactId>connector-hcm</artifactId>
-	<version>1.4.2.2</version>
+	<version>1.4.2.3</version>
 	<name>hcmConnector</name>
 	<description>hcmConnector</description>
 
@@ -98,5 +98,18 @@
 		</dependency>
 
 	</dependencies>
+
+<distributionManagement>
+    <repository>
+        <id>evolveum-nexus</id>
+        <name>Internal Releases</name>
+        <url>http://nexus.evolveum.com/nexus/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+        <id>evolveum-nexus</id>
+        <name>Internal Snapshots</name>
+        <url>http://nexus.evolveum.com/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+</distributionManagement>
 
 </project>

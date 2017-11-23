@@ -33,6 +33,10 @@ public interface HandlingStrategy {
 	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf, ResultsHandler handler,
 			Map<String, Object> schemaAttributeMap, Filter query);
 
+	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf, ResultsHandler handler);
+	
+	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf);
+	
 	public String processMultiValuedAttributes(Map<String, String> multiValuedAttributeBuffer);
 
 	public List<String> populateDictionary(String flag);

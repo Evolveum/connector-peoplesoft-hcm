@@ -47,8 +47,8 @@ public class DocumentProcessing implements HandlingStrategy {
 
 	private static final String TYPE = "Type";
 
-	private static final String OABRACET = "<";
-	private static final String CABRACET = ">";
+	private static final String OPENINGBRACET = "<";
+	private static final String CLOSINGBRACET = ">";
 	private static final String SLASH = "/";
 	private static final String START = "startElement";
 	private static final String END = "endElement";
@@ -68,6 +68,17 @@ public class DocumentProcessing implements HandlingStrategy {
 
 	private List<String> attrsToGet = new ArrayList<>();
 
+	
+	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf){
+
+		return parseXMLData(conf,null,null,null);
+	}
+	
+	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf, ResultsHandler handler){
+
+		return parseXMLData(conf,handler,null,null);
+	}
+	
 	public Map<String, Object> parseXMLData(HcmConnectorConfiguration conf, ResultsHandler handler,
 			Map<String, Object> schemaAttributeMap, Filter query) {
 
@@ -381,17 +392,17 @@ public class DocumentProcessing implements HandlingStrategy {
 			List<String> builderList) {
 
 		if (START.equals(elementType)) {
-			builderList.add(OABRACET);
+			builderList.add(OPENINGBRACET);
 			builderList.add(attributeName);
 			builderList.add(SLASH);
-			builderList.add(CABRACET);
+			builderList.add(CLOSINGBRACET);
 		} else if (END.equals(elementType)) {
 			builderList.remove(builderList.size() - 3);
 
-			builderList.add(OABRACET);
+			builderList.add(OPENINGBRACET);
 			builderList.add(SLASH);
 			builderList.add(attributeName);
-			builderList.add(CABRACET);
+			builderList.add(CLOSINGBRACET);
 
 		} else if (VALUE.equals(elementType)) {
 
@@ -406,7 +417,7 @@ public class DocumentProcessing implements HandlingStrategy {
 			builderList.add(attributeValue);
 
 		} else if (CLOSE.equals(elementType)) {
-			StringBuilder buildEndTag = new StringBuilder(OABRACET).append(ASSIGNMENTTAG).append(CABRACET);
+			StringBuilder buildEndTag = new StringBuilder(OPENINGBRACET).append(ASSIGNMENTTAG).append(CLOSINGBRACET);
 
 			builderList.add(0, buildEndTag.toString());
 			buildEndTag.insert(1, SLASH);
